@@ -162,17 +162,11 @@ function mkOperTotal(id, rows){
           ctx.textAlign = 'left';
           ctx.fillText(valueText, x.getPixelForValue(row.total)+6, y);
         }
-        const auxText = `제어기수: ${row.chartControllers ?? row.controllers} | 일평균: ${row.daily}h`;
+        const auxText = `제어기 ${row.chartControllers ?? row.controllers} | 일평균 ${row.daily}h`;
         ctx.fillStyle = '#5B6577';
-        ctx.font = '600 10.5px Pretendard, sans-serif';
-        ctx.textAlign = 'left';
-        const auxWidth = ctx.measureText(auxText).width;
-        const auxStart = chartArea.left + (chartArea.right - chartArea.left) * 0.72;
-        const labelX = Math.min(
-          Math.max(auxStart, x.getPixelForValue(row.total) + 16),
-          chartArea.right - auxWidth - 6
-        );
-        ctx.fillText(auxText, labelX, y);
+        ctx.font = '600 9.5px Pretendard, sans-serif';
+        ctx.textAlign = 'right';
+        ctx.fillText(auxText, chartArea.right - 4, y);
       });
       ctx.restore();
     }
@@ -186,7 +180,7 @@ function mkOperTotal(id, rows){
     }]},
     options:{
       indexAxis:'y',responsive:true,maintainAspectRatio:false,
-      layout:{padding:{right:20}},
+      layout:{padding:{right:4}},
       plugins:{
         legend:{display:false},
         tooltip:{callbacks:{label:c=>{
