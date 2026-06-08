@@ -70,13 +70,16 @@ function dayLabel(v){
   return s;
 }
 
+/* ✏️ 공휴일 날짜 — 주말(토·일)은 자동 계산되고, 여기엔 공휴일만 적으면 됩니다.
+   해당 날짜의 x축 라벨이 빨간색으로 표시됩니다. (매달 이 줄만 갱신) */
+const PUBLIC_HOLIDAYS = ['2026-05-01', '2026-05-05', '2026-05-25']; // 근로자의날 · 어린이날 · 대체공휴일
+
 function isHolidayDate(v){
   const s = String(v ?? '').trim();
   const m = s.match(/^(\d{4})-(\d{2})-(\d{2})$/);
   if(!m) return false;
-  const d = new Date(`${m[1]}-${m[2]}-${m[3]}T00:00:00`);
-  const day = d.getDay();
-  return day === 0 || day === 6 || s === '2026-05-05' || s === '2026-05-25';
+  const day = new Date(`${m[1]}-${m[2]}-${m[3]}T00:00:00`).getDay();
+  return day === 0 || day === 6 || PUBLIC_HOLIDAYS.includes(s);
 }
 
 function tickColor(){
