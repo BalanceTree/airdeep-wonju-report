@@ -12,11 +12,11 @@
 let DAYS = Array.from({length:31},(_,i)=>`${i+1}`);
 const BLUE = ['#2D6BFF','#E5484D','#22C55E','#F59E0B','#7C3AED','#0F766E','#BE185D','#78716C'];
 const GRID = '#E5E9F0';
-const DATA_VERSION = '20260608-2';
 let HOLIDAYS = new Set();
 
 function dataUrl(path){
-  return `${path}?v=${DATA_VERSION}`;
+  // CSV를 수정하면 항상 최신 데이터를 다시 불러오도록 매번 다른 값을 붙임
+  return `${path}?v=${Date.now()}`;
 }
 
 /* ── CSV 파서 (따옴표 필드 지원) ───────────────────────────── */
