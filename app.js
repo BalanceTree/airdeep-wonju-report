@@ -12,7 +12,7 @@
 let DAYS = Array.from({length:31},(_,i)=>`${i+1}`);
 const BLUE = ['#2D6BFF','#E5484D','#22C55E','#F59E0B','#7C3AED','#0F766E','#BE185D','#78716C'];
 const GRID = '#E5E9F0';
-const DATA_VERSION = '20260608-1';
+const DATA_VERSION = '20260608-2';
 let HOLIDAYS = new Set();
 
 function dataUrl(path){
@@ -357,9 +357,9 @@ async function main(){
 
   const TOP_TOTAL = top5Rows.map(r=>({
     p: r['구역'],
-    t: num(r['월누적가동시간_시간']) ?? num(r['총가동']) ?? 0,
-    e: num(r['제어기수']) ?? num(r['제어기']) ?? 0,
-    a: num(r['하루평균가동시간_시간']) ?? num(r['하루평균']) ?? 0
+    t: num(r['월누적가동시간_시간']) ?? num(r['총(H)']) ?? num(r['총']) ?? num(r['총가동']) ?? 0,
+    e: num(r['제어기수']) ?? num(r['장비']) ?? num(r['제어기']) ?? 0,
+    a: num(r['제어기당_하루평균가동시간_시간']) ?? num(r['제어기당_일평균가동시간']) ?? num(r['일평균']) ?? num(r['하루평균가동시간_시간']) ?? num(r['하루평균']) ?? 0
   })).filter(r=>r.p).sort((a,b)=>b.t-a.t).slice(0,5);
   mkTop5('c-t5in','t5inB',TOP_TOTAL,'#2D6BFF','total');
 }
