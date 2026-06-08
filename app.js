@@ -327,19 +327,31 @@ async function main(){
     });
   }
 
-  /* 4 & 6 & TOP5: summary.csv */
-  const OPER = summary.map(r=>({
-    zone: r['구역'],
-    total: num(r['총가동']) ?? 0,
-    days: num(r['가동일']) ?? 0,
-    avgTemp: num(r['평균온도']) ?? 0,
-    controllers: num(r['제어기']) ?? 0,
-    chartControllers: num(r['차트제어기']),
-    daily: num(r['일평균']) ?? 0,
-    under: num(r['26도이하']) ?? 0,
-    judge: (r['판정']||'').trim(),
-    action: r['조치'] || ''
-  }));
+  /* 4 & 6 & TOP5: summary.csv
+     판정/조치 컬럼이 CSV에 없으면 누적시간·평균온도 기준으로 자동 생성 */
+  function autoJudge(total, avgTemp){
+    if(total >= 1000)   return { judge:'risk', action:'누적 가동시간이 가장 높아 장시간 운전일을 우선 점검하고 종료 스케줄을 분리 관리' };
+    if(avgTemp >= 25)   return { judge:'warn', action:'평균 실내온도가 높은 편이므로 냉방 설정온도와 가동 시간대를 점검' };
+    if(total >= 300)    return { judge:'warn', action:'가동 시간이 높은 편이므로 이용 종료 후 잔여 가동 여부를 점검' };
+    return { judge:'ok', action:'현재 안정적으로 운영 중으로 현 수준 유지' };
+  }
+  const OPER = summary.map(r=>{
+    const total = num(r['총가동']) ?? 0;
+    const avgTemp = num(r['평균온도']) ?? 0;
+    let judge = (r['판정']||'').trim();
+    let action = r['조치'] || '';
+    if(!judge){ const a = autoJudge(total, avgTemp); judge = a.judge; if(!action) action = a.action; }
+    return {
+      zone: r['구역'], total,
+      days: num(r['가동일']) ?? 0,
+      avgTemp,
+      controllers: num(r['제어기']) ?? 0,
+      chartControllers: num(r['차트제어기']),
+      daily: num(r['일평균']) ?? 0,
+      under: num(r['26도이하']) ?? 0,
+      judge, action
+    };
+  });
 
   const daysRows = [...OPER].sort((a,b)=>b.days-a.days);
   mkBar('c-oper-days', daysRows.map(r=>r.zone), daysRows.map(r=>r.days), daysRows.map((_,i)=>BLUE[i%BLUE.length]), '일');
