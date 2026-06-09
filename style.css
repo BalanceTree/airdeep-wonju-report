@@ -898,7 +898,7 @@ section {
 .t5tbl th:not(:nth-child(2)) { text-align: center; }
 
 .t5tbl td {
-  padding: 7px 8px;
+  padding: 8px 8px;
   border-top: 1px solid var(--line-2);
   color: var(--ink-2);
 }
