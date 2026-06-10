@@ -281,16 +281,16 @@ async function main(){
   mkLine('c-outdoor-vs', sensorTemp.names, sensorTemp.map, BLUE, 28, '온습도계 측정 온도');
 
   /* 5. 시설별 상세 가동시간 — 시설별 1파일(5-1·5-2·5-3·5-4) */
-  mkLine('c-main-oper',  fac1.names, fac1.map, BLUE, 4,  '일평균 가동시간'); // 5-1 종합운동장
+  mkLine('c-main-oper',  fac1.names, fac1.map, BLUE, 9,  '일평균 가동시간'); // 5-1 종합운동장
   mkLine('c-park-oper',  fac3.names, fac3.map, BLUE, 7,  '일평균 가동시간'); // 5-2 치악체육관
   mkLine('c-gym-oper',   fac4.names, fac4.map, BLUE, 3,  '일평균 가동시간'); // 5-3 국민체육센터
-  mkLine('c-park2-oper', fac5.names, fac5.map, BLUE, 16, '일평균 가동시간'); // 5-4 종합체육관
+  mkLine('c-park2-oper', fac5.names, fac5.map, BLUE, 25, '일평균 가동시간'); // 5-4 종합체육관
 
   /* 섹션4·6 — 데이터팀 파일에서 직접 구성
      판정/조치는 누적시간·평균온도 기준으로 자동 생성 */
   function autoJudge(total, avgTemp){
-    if(total >= 1000)   return { judge:'risk', action:'누적 가동시간이 가장 높아 장시간 운전일을 우선 점검하고 종료 스케줄을 분리 관리' };
-    if(avgTemp >= 25)   return { judge:'warn', action:'평균 실내온도가 높은 편이므로 냉방 설정온도와 가동 시간대를 점검' };
+    if(total >= 600)    return { judge:'risk', action:'누적 가동시간이 가장 높은 수준으로 장시간 운전일과 상시 가동 공간을 우선 점검' };
+    if(avgTemp >= 25)   return { judge:'warn', action:'평균 실내온도가 높은 편이므로 냉방 설정온도와 야간 운전 기준을 점검' };
     if(total >= 300)    return { judge:'warn', action:'가동 시간이 높은 편이므로 이용 종료 후 잔여 가동 여부를 점검' };
     return { judge:'ok', action:'현재 안정적으로 운영 중으로 현 수준 유지' };
   }
@@ -303,13 +303,13 @@ async function main(){
   const operByZone = {};
   const operTotal = operTotalRows.map(r=>{
     const zone = r['구역'];
-    const ctrl = num(r['제어기수']) ?? num(r['제어기']) ?? 0;
+    const ctrl = num(r['제어기_대수']) ?? num(r['제어기수']) ?? num(r['제어기']) ?? 0;
     const o = {
       zone,
-      total: num(r['누적가동시간']) ?? num(r['총가동']) ?? 0,
+      total: num(r['월누적_가동시간_시간']) ?? num(r['누적가동시간']) ?? num(r['총가동']) ?? 0,
       controllers: ctrl,
       chartControllers: ctrl,
-      daily: num(r['제어기당_일평균가동시간']) ?? num(r['일평균']) ?? 0
+      daily: num(r['제어기1대당_하루평균_가동시간_시간']) ?? num(r['제어기당_일평균가동시간']) ?? num(r['일평균']) ?? 0
     };
     operByZone[zone] = o;
     return o;
